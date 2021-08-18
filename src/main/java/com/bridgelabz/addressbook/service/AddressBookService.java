@@ -11,12 +11,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AddressBookService implements IAddressBookService{
+public class AddressBookService implements IAddressBookService {
 
   @Autowired
   private AddressBookRepo addressBookRepo;
@@ -42,7 +43,12 @@ public class AddressBookService implements IAddressBookService{
 
   @Override
   public AddressBookDTO updateAddressBook(int id, AddressBookDTO addressBookDTO) {
-    addressBookRepo.findById(id).orElseThrow(()-> new CustomException(ExceptionConstant.ID_NOT_FOUND.getMessage()));
-    return null;
+    AddressBookDO addressBookDO = addressBookRepo.findById(id)
+        .orElseThrow(() -> new CustomException(ExceptionConstant.ID_NOT_FOUND.getMessage()));
+    BeanUtils.copyProperties(addressBookDTO, addressBookDO);
+    // DTO-> Sanobar
+    // DO-> Test -> Sanobar
+    addressBookRepo.save(addressBookDO);
+    return addressBookDTO;
   }
 }
